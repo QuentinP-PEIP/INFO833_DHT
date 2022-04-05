@@ -79,7 +79,7 @@ public class DHT implements EDProtocol {
     		System.out.println(CommonState.getTime() + " |Message.DHT| Node n°" + this.nodeUid + " " + msg.getContent());
 
 			//System.out.println("|Message.DHT| NOEUD PREC" + this.getNoeudPrec() + " " + "NOEUD SUIV" + this.getNoeudSuiv());
-			System.out.println(CommonState.getTime() + " NOEUD SUIV : " + this.noeudSuiv.getNodeUid());
+			//System.out.println(CommonState.getTime() + " NOEUD SUIV : " + this.noeudSuiv.getNodeUid());
 			
 			
 			if (this.getNoeudSuiv().getNodeId() == 0) {
@@ -136,8 +136,6 @@ public class DHT implements EDProtocol {
     			this.send(new Message(Message.PLACE, "Envoyé par : " +this.nodeUid, msg.getUid(), msg.getNetwork_rank(), msg.getNoeud_a_set()), Network.get(this.noeudSuiv.getNodeId()));
     		}
     		
-    		
-    		
     		// Pour set les nouveau voisins, on envoit des messages new voisin suiv et prec
     		
     		//Quand on créé un noeud, on met getProtocol(0) à la place de dHTpid
@@ -161,29 +159,20 @@ public class DHT implements EDProtocol {
     		
     	}
     	
-    	/*if (msg.getUid() != null) {
-    			
-    			if (this.nodeId == 0) {
-    				Node dest = Network.get(this.noeudSuiv.getNodeId());
-            		this.send(new Message(0, "Envoyé par : " +this.nodeUid, msg.getUid()), dest);
-            	}
-    			
-    			if(msg.getUid() > this.nodeUid) {
-    				
-    				System.out.println(msg.getUid() + " > " + this.getNodeUid() + " C'EST PLUS");
-    				Node dest = Network.get(this.noeudSuiv.getNodeId());
-            		this.send(new Message(0, "Envoyé par : " +this.nodeUid, msg.getUid()), dest);
-    				
-    			}
-    			
-    			else {
-    				System.out.println(msg.getUid() + " < " + this.getNodeUid() + " C'EST MOINS");
-    				Node dest = Network.get(0);
-            		this.send(new Message(0, "Envoyé par : " + this.nodeUid), dest);
-    			}
-    	*/
     	
     	//Pour le leave, on utilise les message New prec et new suiv en envoyant le noeud prec au noeud suiv et inversement
+    	
+    	if (msg.getType() == Message.LEAVE) {
+    		
+    		this.send(new Message(Message.SET_NOEUD_PREC, "Envoyé par : " + this.nodeUid, msg.getUid(), msg.getNetwork_rank(), this.getNoeudPrec()), Network.get(this.getNoeudSuiv().getNodeId()));
+    		this.send(new Message(Message.SET_NOEUD_SUIV, "Envoyé par : " + this.nodeUid, msg.getUid(), msg.getNetwork_rank(), this.getNoeudSuiv()), Network.get(this.getNoeudPrec().getNodeId()));
+    		
+    		//this.getNoeudPrec().setNoeudSuiv(this.getNoeudSuiv());	
+    		//this.getNoeudSuiv().setNoeudSuiv(this.getNoeudPrec());
+    		
+    		this.setNoeudPrec(null);
+    		this.setNoeudSuiv(null);
+    	}
     }
 
     //retourne le noeud courant

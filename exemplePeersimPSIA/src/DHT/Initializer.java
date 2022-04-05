@@ -99,10 +99,11 @@ public class Initializer implements peersim.core.Control {
 	
 	EDSimulator.add(1000, new Message(Message.JOIN,"Demande de JOIN"), Network.get(3), 0);
 	
-	
 	EDSimulator.add(2000, new Message(Message.DHT,"Test du JOIN"), Network.get(0), 0);
 	
+	EDSimulator.add(2500, new Message(Message.LEAVE,"Leave du noeud"), Network.get(3), 0);
 	
+	EDSimulator.add(3000, new Message(Message.DHT,"Test du JOIN"), Network.get(0), 0);
 
 	System.out.println("Initialization completed");
 	return false;

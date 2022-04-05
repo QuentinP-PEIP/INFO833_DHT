@@ -9,6 +9,7 @@ public class Message {
     public final static int PLACE = 2;
     public final static int SET_NOEUD_SUIV = 3;
     public final static int SET_NOEUD_PREC = 4;
+    public final static int LEAVE = 5;
     
     
 
