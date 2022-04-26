@@ -2,6 +2,7 @@ package DHT;
 
 public class Data {
 	
+	//Chaque donnée est définie par un id
 	private int id;
 	
 	public Data(int id) {

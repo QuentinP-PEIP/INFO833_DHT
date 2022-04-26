@@ -10,10 +10,10 @@ import java.util.Random;
 import peersim.config.*;
 
 /*
-  Module d'initialisation de helloWorld: 
+  Module d'initialisation de la DHT : 
   Fonctionnement:
     pour chaque noeud, le module fait le lien entre la couche transport et la couche applicative
-    ensuite, il fait envoyer au noeud 0 un message "Hello" a tous les autres noeuds
+    ensuite, on peut ajouter des événements au simulateur
  */
 public class Initializer implements peersim.core.Control {
     
@@ -39,22 +39,19 @@ public class Initializer implements peersim.core.Control {
 	    System.exit(1);
 	}
 	
-	//création des trois premier noeuds
+	//création du premier noeud
 	DHT noeud0 = (DHT) Network.get(0).getProtocol(this.dHTPid);
+	//recuperation de la couche applicative de l'emetteur (le noeud 0)
 	noeud0.setTransportLayer(0, 0);
 
-
-
-	//recuperation de la couche applicative de l'emetteur (le noeud 0)
-	//emitter = (DHT) Network.get(0).getProtocol(this.dHTPid);
-	//emitter.setTransportLayer(0);
+	//Le premier émetteur est le noeud 0
 	emitter = noeud0;
 
-	//pour chaque noeud, on fait le lien entre la couche applicative et la couche transport
-	//puis on fait envoyer au noeud 0 un message "Hello"
+	//pour chaque noeud, on fait le lien entre la couche applicative et la couche transport et on leur assigne un uid aléatoire
 	
-	for (int i = 1; i < nodeNb; i++) { //Pour un réseau de 20 noeuds, on en initialise que 3, on les connecte (infos) et on essaye d'en rajouter un
+	for (int i = 1; i < nodeNb; i++) {
 		
+		//On fait en sorte que le uid soit unique
 		int nodeUid = new Random().nextInt(1000) + 1;
 		while (nodeIds.contains(nodeUid)) {
 			nodeUid = new Random().nextInt(1000) + 1;
@@ -62,14 +59,17 @@ public class Initializer implements peersim.core.Control {
 		nodeIds.add(nodeUid);
 	    current = (DHT) Network.get(i).getProtocol(this.dHTPid);
 	    current.setTransportLayer(i, nodeUid);
-	    //emitter.send(helloMsg, dest);
+
 	}
 	
 	System.out.println(nodeIds);
 	
+	//Nous allons définir les voisins pour les trois premiers noeuds afin de les rendre "actifs"
+	
 	DHT noeud1 = (DHT) Network.get(1).getProtocol(this.dHTPid);
 	DHT noeud2 = (DHT) Network.get(2).getProtocol(this.dHTPid);
 	
+	//Si le noeud 2 doit suivre le noeud 1
 	if (noeud1.getNodeUid() < noeud2.getNodeUid()) {
 		
 		noeud0.setNoeudPrec(noeud2);
@@ -82,6 +82,7 @@ public class Initializer implements peersim.core.Control {
 		noeud2.setNoeudSuiv(noeud0);
 	}
 	
+	//Si le noeud 2 doit précéder le noeud 1
 	if (noeud1.getNodeUid() > noeud2.getNodeUid()) {
 		
 		noeud0.setNoeudPrec(noeud1);
@@ -94,10 +95,15 @@ public class Initializer implements peersim.core.Control {
 		noeud2.setNoeudSuiv(noeud1);
 	}
 
+	//On envoi un message de type DHT qui est notre message de base au noeud 0 afin de s'assurer que les noeuds sont bien paramétrés
 	dest = Network.get(0);
 	emitter.send(new Message(Message.DHT,"Envoyé par : " + noeud0.getNodeUid()), dest);
 	
+	//Nous pouvons maintenant ajouter des événements avec un délai prédéfini
+	
 	EDSimulator.add(1000, new Message(Message.JOIN,"Demande de JOIN"), Network.get(3), 0);
+	
+	EDSimulator.add(1700, new Message(Message.ACCESS_TABLE,"Test du ACCES_TABLE"), Network.get(0), 0);
 	
 	EDSimulator.add(2000, new Message(Message.DHT,"Test du JOIN"), Network.get(0), 0);
 	
@@ -118,6 +124,8 @@ public class Initializer implements peersim.core.Control {
 	EDSimulator.add(5000, new Message(Message.PUT,"Test du PUT", dataTest), Network.get(0), 0);
 	
 	EDSimulator.add(5500, new Message(Message.GET,"Test du GET", dataTest), Network.get(0), 0);
+	
+	EDSimulator.add(6000, new Message(Message.ACCESS_TABLE,"Test du ACCES_TABLE"), Network.get(0), 0);
 
 	System.out.println("Initialization completed");
 	return false;

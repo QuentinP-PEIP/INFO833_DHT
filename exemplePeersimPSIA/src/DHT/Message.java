@@ -4,6 +4,7 @@ import peersim.edsim.*;
 
 public class Message {
 
+	//Afin d'associer chaque message avec les actions correspondantes, on crée donc différents types de messages
     public final static int DHT = 0;
     public final static int JOIN = 1;
     public final static int PLACE_NODE = 2;
@@ -15,26 +16,34 @@ public class Message {
     public final static int PUT = 8;
     public final static int PLACE_DATA = 9;
     public final static int GET = 10;
+    public final static int ADD_NODE_TO_TABLE = 11;
+    public final static int REMOVE_NODE_TO_TABLE = 12;
+    public final static int ACCESS_TABLE = 13;
     
-
-    private int type;
-    private String content;
+   
+    private int type;  //Le type de message
+    private String content; 
     private Integer uid;
-    private int network_rank;
-    private DHT noeud_a_set;
-    private Data donnee;
+    private int network_rank; //Rang du noeud dans le réseau
+    private DHT noeud_a_set; //Permet de faire passer un noeud dans un message
+    private Data donnee; //Permet de faire passer un noeud dans un message
     
+    //Nous utilisons différents constructeurs de message afin de transmettre les informations dont nous avons besoin
+    
+    //Tous les messages sont composés d'un type et d'un contenu
     Message(int type, String content) {
 	this.type = type;
 	this.content = content;
     }
     
+    //Ce constructeur permet de transporter un noeud
     Message(int type, String content, DHT noeud_a_set) {
         this.type = type;
         this.content = content;
         this.noeud_a_set= noeud_a_set;
         }
     
+    //Ce constructeur permet de transporter un uid et le rang dans le réseau
     Message(int type, String content, Integer uid, int network_rank) {
     this.type = type;
     this.content = content;
@@ -42,6 +51,7 @@ public class Message {
     this.setNetwork_rank(network_rank);
     }
     
+    //Ce constructeur permet de transporter un uid, le rang dans le réseau et un noeud
     Message(int type, String content, Integer uid, int network_rank, DHT noeud_a_set) {
         this.type = type;
         this.content = content;
@@ -50,6 +60,7 @@ public class Message {
         this.setNoeud_a_set(noeud_a_set);
         }
     
+    //Ce constructeur permet de transporter une donnée
     Message(int type, String content, Data donnee) {
         this.type = type;
         this.content = content;
